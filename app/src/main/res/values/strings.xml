@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Photo Gallery</string>
+    <string name="cameraButton">Camera</string>
+</resources>
