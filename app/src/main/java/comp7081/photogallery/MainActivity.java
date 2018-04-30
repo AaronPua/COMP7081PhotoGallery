@@ -18,6 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
+import comp7081.photogallery.database.BitmapUtility;
+import comp7081.photogallery.database.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageView mImageView;
     String mCurrentPhotoPath;
     Uri photoURI;
+    String imageFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +76,18 @@ public class MainActivity extends AppCompatActivity {
             if(imgFile.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                 mImageView.setImageBitmap(bitmap);
+
+                byte[] byteArray = BitmapUtility.getBytes(bitmap);
+                DatabaseHelper dbHelper = new DatabaseHelper(getBaseContext());
+                dbHelper.addPhotoEntry(imageFileName, byteArray);
             }
         }
     }
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        imageFileName = timeStamp;
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
