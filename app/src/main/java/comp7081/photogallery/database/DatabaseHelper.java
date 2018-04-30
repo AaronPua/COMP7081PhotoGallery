@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -59,23 +63,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //cv.put(KEY_NAME,    name);
         cv.put(KEY_DATE,    date);
         //cv.put(KEY_LOCATION,    location);
-        database.insert(DB_TABLE, null, cv );
+        database.insert(DB_TABLE, null, cv);
+    }
+
+    public ArrayList<Bitmap> getBitmapArrayList() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        String selectQuery =  "SELECT " +
+                KEY_IMAGE +
+                " FROM " + DB_TABLE;
+
+        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+
+        try {
+            Cursor cursor = database.rawQuery(selectQuery, null);
+
+            if(cursor != null && cursor.moveToFirst())
+            {
+                while(!cursor.isAfterLast())
+                {
+                    int index = cursor.getColumnIndexOrThrow("image");
+                    byte[] image = cursor.getBlob(index);
+                    Bitmap bitmap = BitmapUtility.getImage(image);
+                    bitmapArray.add(bitmap);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return bitmapArray;
+            }
+            cursor.close();
+        }
+        catch (SQLiteException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public byte[] getMostRecentPhoto() throws SQLiteException {
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE;
+        String selectQuery =  "SELECT  " +
+                KEY_ID + "," +
+                KEY_IMAGE + "," +
+                KEY_NAME + "," +
+                KEY_DATE + "," +
+                KEY_LOCATION +
+                " FROM " + DB_TABLE;
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, null);
-            if(cursor != null) {
-                cursor.moveToLast();
+
+            if(cursor != null && cursor.moveToLast())
+            {
                 int index = cursor.getColumnIndexOrThrow("image");
                 byte[] image = cursor.getBlob(index);
                 cursor.close();
                 return image;
             }
-        } catch (SQLiteException ex) {
+            cursor.close();
+        }
+        catch (SQLiteException ex) {
             ex.printStackTrace();
         }
         return null;

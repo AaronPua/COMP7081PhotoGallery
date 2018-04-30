@@ -11,12 +11,12 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -31,17 +31,28 @@ public class MainActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     Uri photoURI;
     String imageFileName;
+    DatabaseHelper dbHelper;
+    int currentPhotoIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
-        showMostRecentPhoto(mImageView);
+
+        dbHelper = new DatabaseHelper(getApplicationContext());
+        ArrayList<Bitmap> bitmapArrayList = dbHelper.getBitmapArrayList();
+        if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
+            currentPhotoIndex = bitmapArrayList.size() - 1;
+            Bitmap lastBitmap = bitmapArrayList.get(currentPhotoIndex);
+            mImageView.setImageBitmap(lastBitmap);
+        } else {
+            mImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        }
     }
 
     public void openCameraApp(View view) {
-
+        Log.d("open camera photo index, index", Integer.toString(currentPhotoIndex));
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -64,12 +75,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showMostRecentPhoto(ImageView mImageView) {
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        byte[] image = dbHelper.getMostRecentPhoto();
-        if(image != null) {
-            Bitmap bitmap = BitmapUtility.getImage(image);
-            mImageView.setImageBitmap(bitmap);
+    public void previousOrNextPhoto(View view) {
+
+        ArrayList<Bitmap> bitmapArrayList = dbHelper.getBitmapArrayList();
+        if(bitmapArrayList != null && bitmapArrayList.size() > 0)
+        {
+            switch (view.getId()) {
+                case R.id.previousPhotoButton:
+                    --currentPhotoIndex;
+                    break;
+                case R.id.nextPhotoButton:
+                    ++currentPhotoIndex;
+                    break;
+                default:
+                    break;
+            }
+
+            if (currentPhotoIndex < 0)
+                currentPhotoIndex = 0;
+            if (currentPhotoIndex >= bitmapArrayList.size())
+                currentPhotoIndex = bitmapArrayList.size() - 1;
+
+            Bitmap lastBitmap = bitmapArrayList.get(currentPhotoIndex);
+            mImageView.setImageBitmap(lastBitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
@@ -78,15 +106,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
+        {
             File imgFile = new File(mCurrentPhotoPath);
-            if(imgFile.exists()) {
+            if(imgFile.exists())
+            {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                 mImageView.setImageBitmap(bitmap);
-
-                byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
-                DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-                dbHelper.addPhotoEntry(imageFileName, byteArray);
+                try {
+                    byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
+                    dbHelper.addPhotoEntry(imageFileName, byteArray);
+                    ++currentPhotoIndex;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

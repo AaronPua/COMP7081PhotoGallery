@@ -4,13 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class BitmapUtility {
 
     // Convert from bitmap to byte array
-    public static byte[] convertBitmapToByteArray(Bitmap bitmap) {
+    public static byte[] convertBitmapToByteArray(Bitmap bitmap) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        stream.close();
         return stream.toByteArray();
     }
 
