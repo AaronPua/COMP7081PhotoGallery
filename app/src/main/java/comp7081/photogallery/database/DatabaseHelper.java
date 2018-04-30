@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -68,9 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Bitmap> getBitmapArrayList() {
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " +
-                KEY_IMAGE +
-                " FROM " + DB_TABLE;
+        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE;
 
         ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
 
@@ -89,34 +86,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
                 cursor.close();
                 return bitmapArray;
-            }
-            cursor.close();
-        }
-        catch (SQLiteException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public byte[] getMostRecentPhoto() throws SQLiteException {
-        SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT  " +
-                KEY_ID + "," +
-                KEY_IMAGE + "," +
-                KEY_NAME + "," +
-                KEY_DATE + "," +
-                KEY_LOCATION +
-                " FROM " + DB_TABLE;
-
-        try {
-            Cursor cursor = database.rawQuery(selectQuery, null);
-
-            if(cursor != null && cursor.moveToLast())
-            {
-                int index = cursor.getColumnIndexOrThrow("image");
-                byte[] image = cursor.getBlob(index);
-                cursor.close();
-                return image;
             }
             cursor.close();
         }

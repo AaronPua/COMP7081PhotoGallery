@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openCameraApp(View view) {
-        Log.d("open camera photo index, index", Integer.toString(currentPhotoIndex));
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -116,7 +115,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
                     dbHelper.addPhotoEntry(imageFileName, byteArray);
-                    ++currentPhotoIndex;
+
+                    ArrayList<Bitmap> bitmapArrayList = dbHelper.getBitmapArrayList();
+                    if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
+                        currentPhotoIndex = bitmapArrayList.size() - 1;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
