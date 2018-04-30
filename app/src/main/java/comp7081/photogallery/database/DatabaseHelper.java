@@ -18,11 +18,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_TABLE = "Photos";
 
     // column names
+    private static final String KEY_ID = "id";
     private static final String KEY_DATE = "date";
     private static final String KEY_IMAGE = "image";
 
     // Table create statement
     private static final String CREATE_TABLE_IMAGE = "CREATE TABLE " + DB_TABLE + "("+
+            KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             KEY_DATE + " TEXT," +
             KEY_IMAGE + " BLOB);";
 
