@@ -37,14 +37,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
-        mImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        showMostRecentPhoto(mImageView);
     }
 
     public void openCameraApp(View view) {
-        dispatchTakePictureIntent();
-    }
-
-    private void dispatchTakePictureIntent() {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -68,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showMostRecentPhoto(ImageView mImageView) {
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        byte[] image = dbHelper.getMostRecentPhoto();
+        if(image != null) {
+            Bitmap bitmap = BitmapUtility.getImage(image);
+            mImageView.setImageBitmap(bitmap);
+        } else {
+            mImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -77,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                 mImageView.setImageBitmap(bitmap);
 
-                byte[] byteArray = BitmapUtility.getBytes(bitmap);
-                DatabaseHelper dbHelper = new DatabaseHelper(getBaseContext());
+                byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
+                DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
                 dbHelper.addPhotoEntry(imageFileName, byteArray);
             }
         }
