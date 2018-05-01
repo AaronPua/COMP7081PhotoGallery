@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -55,17 +56,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addPhotoEntry(String date, byte[] image) throws SQLiteException {
+    public void addPhotoEntry(String name, String date, byte[] image) throws SQLiteException {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(KEY_IMAGE,   image);
-        //cv.put(KEY_NAME,    name);
+        cv.put(KEY_NAME,    name);
         cv.put(KEY_DATE,    date);
         //cv.put(KEY_LOCATION,    location);
         database.insert(DB_TABLE, null, cv);
     }
 
-    public ArrayList<Bitmap> getBitmapArrayList() {
+    public ArrayList<Bitmap> getAllPhotos() {
         SQLiteDatabase database = this.getReadableDatabase();
         String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE;
 
@@ -73,6 +74,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, null);
+
+            if(cursor != null && cursor.moveToFirst())
+            {
+                while(!cursor.isAfterLast())
+                {
+                    int index = cursor.getColumnIndexOrThrow("image");
+                    byte[] image = cursor.getBlob(index);
+                    Bitmap bitmap = BitmapUtility.getImage(image);
+                    bitmapArray.add(bitmap);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return bitmapArray;
+            }
+            cursor.close();
+        }
+        catch (SQLiteException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Bitmap> getPhotosByDate(String startDate, String endDate) {
+        SQLiteDatabase database = this.getReadableDatabase();
+        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE +
+                " WHERE " + KEY_DATE + " BETWEEN " + "?" + " AND " + "?";
+        String[] selectionArgs = new String[]{startDate, endDate};
+
+        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+
+        try {
+            Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
 
             if(cursor != null && cursor.moveToFirst())
             {
