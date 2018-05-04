@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
-        captionTextView = (TextView) findViewById(R.id.captionTextView);
+        //captionTextView = (TextView) findViewById(R.id.captionTextView);
 
         dbHelper = new DatabaseHelper(getApplicationContext());
         bitmapArrayList = dbHelper.getAllPhotos();
@@ -60,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
             Bitmap lastBitmap = bitmapArrayList.get(currentPhotoIndex);
             mImageView.setImageBitmap(lastBitmap);
             
-            String caption = dbHelper.getCaption(currentPhotoIndex);
+            /*String caption = dbHelper.getCaption(currentPhotoIndex);
             if(!TextUtils.isEmpty(caption))
                 captionTextView.setText("Caption: " + caption);
             else
-                captionTextView.setText("Caption: ");
+                captionTextView.setText("Caption: ");*/
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
-            captionTextView.setText("");
+            //captionTextView.setText("");
         }
     }
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                             caption = captionEditText.getText().toString();
                             dbHelper.updateCaption((currentPhotoIndex), caption);
                             Toast.makeText(MainActivity.this, "Updated caption: " + caption, Toast.LENGTH_LONG).show();
-                            captionTextView.setText("Caption: " + caption);
+                            //captionTextView.setText("Caption: " + caption);
                         }
                     }
                 });
@@ -144,16 +144,17 @@ public class MainActivity extends AppCompatActivity {
 
             Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
             mImageView.setImageBitmap(bitmap);
-            caption = dbHelper.getCaption(currentPhotoIndex);
+
+            /*caption = dbHelper.getCaption(currentPhotoIndex);
             if(!TextUtils.isEmpty(caption)) {
                 captionTextView.setText("Caption: " + caption);
             }
             else {
                 captionTextView.setText("Caption: ");
-            }
+            }*/
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
-            captionTextView.setText("");
+            //captionTextView.setText("");
         }
     }
 
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                             if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
                                 currentPhotoIndex = bitmapArrayList.size() - 1;
                             }
-                            captionTextView.setText("Caption:");
+                            //captionTextView.setText("Caption:");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                             currentPhotoIndex = bitmapArrayList.size() - 1;
                             Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
                             mImageView.setImageBitmap(bitmap);
-                            captionTextView.setText("Caption: " + caption);
+                            //captionTextView.setText("Caption: " + caption);
                         }
                     }
                 }
