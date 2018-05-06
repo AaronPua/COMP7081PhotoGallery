@@ -68,6 +68,5 @@ public class OpenCameraTakePhotoTest {
 
         // We can also validate that an intent resolving to the "camera" activity has been sent out by our app
         //intended(toPackage("com.android.camera2"));
-
     }
 }
