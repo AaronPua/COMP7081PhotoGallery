@@ -10,9 +10,8 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageInterface {
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -184,36 +183,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         database.update(DB_TABLE, cv, KEY_ID + " = ?", new String[] {String.valueOf(id)});
         database.close();
-    }
-
-    public String getCaption(int id) {
-        SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_CAPTION + " FROM " + DB_TABLE +
-                " WHERE " + KEY_ID + "= ?";
-
-        // + 1 for the id because currentPhotoIndex is always bitmapArrayList.size() - 1.
-        id = id + 1;
-
-        String[] selectionArgs = new String[]{String.valueOf(id)};
-
-        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
-
-        try {
-            Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
-
-            if(cursor != null && cursor.moveToFirst())
-            {
-                int index = cursor.getColumnIndexOrThrow("caption");
-                String caption = cursor.getString(index);
-                cursor.close();
-                return caption;
-            }
-            cursor.close();
-        }
-        catch (SQLiteException ex) {
-            ex.printStackTrace();
-        }
-        database.close();
-        return null;
     }
 }
