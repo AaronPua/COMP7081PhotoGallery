@@ -96,7 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 {
                     int index = cursor.getColumnIndexOrThrow("image");
                     byte[] image = cursor.getBlob(index);
-                    Bitmap bitmap = BitmapUtility.getImage(image);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
                     bitmapArray.add(bitmap);
                     cursor.moveToNext();
                 }
@@ -129,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 {
                     int index = cursor.getColumnIndexOrThrow("image");
                     byte[] image = cursor.getBlob(index);
-                    Bitmap bitmap = BitmapUtility.getImage(image);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
                     bitmapArray.add(bitmap);
                     cursor.moveToNext();
                 }
@@ -162,7 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 {
                     int index = cursor.getColumnIndexOrThrow("image");
                     byte[] image = cursor.getBlob(index);
-                    Bitmap bitmap = BitmapUtility.getImage(image);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
                     bitmapArray.add(bitmap);
                     cursor.moveToNext();
                 }
