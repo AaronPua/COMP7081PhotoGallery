@@ -28,7 +28,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
     private static final String KEY_NAME = "name";
     private static final String KEY_DATE = "date";
     private static final String KEY_CAPTION = "caption";
-    private static final String KEY_LOCATION = "location";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE = "longitude";
 
 
     // Table create statement
@@ -38,7 +39,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             KEY_NAME + " TEXT," +
             KEY_DATE + " TEXT," +
             KEY_CAPTION + " TEXT," +
-            KEY_LOCATION + " TEXT);";
+            KEY_LATITUDE + " TEXT," +
+            KEY_LONGITUDE + " TEXT);";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -58,7 +60,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         onCreate(db);
     }
 
-    public void addPhotoEntry(byte[] image, String name, String date, String caption, String location) throws SQLiteException {
+    public void addPhotoEntry(byte[] image, String name, String date, String caption,
+                              String latitude, String longitude) throws SQLiteException {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(KEY_IMAGE,   image);
@@ -68,8 +71,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         if(!TextUtils.isEmpty(caption))
             cv.put(KEY_CAPTION, caption);
 
-        if(!TextUtils.isEmpty(location))
-            cv.put(KEY_LOCATION, location);
+        if(!TextUtils.isEmpty(latitude))
+            cv.put(KEY_LATITUDE, latitude);
+
+        if(!TextUtils.isEmpty(longitude))
+            cv.put(KEY_LONGITUDE, longitude);
 
         database.insert(DB_TABLE, null, cv);
         database.close();
