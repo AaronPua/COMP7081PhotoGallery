@@ -7,8 +7,15 @@ public class Photo {
     String date;
     String caption;
 
+    public Photo(byte[] image, String name, String date) {
+        this.image = image;
+        this.name = name;
+        this.date = date;
+    }
+
     public Photo(byte[] image, String name, String date, String caption) {
         this.image = image;
+
         this.name = name;
         this.date = date;
         this.caption = caption;

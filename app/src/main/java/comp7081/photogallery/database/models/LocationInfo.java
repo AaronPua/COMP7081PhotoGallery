@@ -1,8 +1,9 @@
 package comp7081.photogallery.database.models;
 
-public class Location {
+public class LocationInfo {
 
     int id;
+    int photo_id;
     String latitude;
     String longitude;
     String address;
@@ -10,26 +11,11 @@ public class Location {
     String state;
     String country;
     String postalCode;
-    String knownName;
-    String created_at;
 
-    public Location(String address) {
-        this.address = address;
-    }
-
-    public Location(String latitude, String longitude) {
+    // Constructors
+    public LocationInfo(String latitude, String longitude, String address, String city, String state, String country, String postalCode) {
         this.latitude = latitude;
         this.longitude = longitude;
-    }
-
-    public Location(String city, String state, String country, String postalCode) {
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.postalCode = postalCode;
-    }
-
-    public Location(String address, String city, String state, String country, String postalCode) {
         this.address = address;
         this.city = city;
         this.state = state;
@@ -40,6 +26,18 @@ public class Location {
     // Setters
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setPhoto_id(int photo_id) {
+        this.photo_id = photo_id;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public void setAddress(String address) {
@@ -62,15 +60,19 @@ public class Location {
         this.postalCode = postalCode;
     }
 
-    public void setKnownName(String knownName) {
-        this.knownName = knownName;
-    }
-
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
-    }
-
     // Getters
+    public int getPhoto_id() {
+        return this.photo_id;
+    }
+
+    public String getLatitude() {
+        return this.latitude;
+    }
+
+    public String getLongitude() {
+        return this.longitude;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -93,13 +95,5 @@ public class Location {
 
     public String getPostalCode() {
         return this.postalCode;
-    }
-
-    public String getKnownName() {
-        return this.knownName;
-    }
-
-    public String getCreated_at() {
-        return this.created_at;
     }
 }

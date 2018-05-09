@@ -36,6 +36,8 @@ import java.util.Locale;
 
 import comp7081.photogallery.database.BitmapUtility;
 import comp7081.photogallery.database.DatabaseHelper;
+import comp7081.photogallery.database.models.LocationInfo;
+import comp7081.photogallery.database.models.Photo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
         dbHelper = new DatabaseHelper(getApplicationContext());
         bitmapArrayList = dbHelper.getAllPhotos();
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     if (imgFile.exists()) {
                         Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                         mImageView.setImageBitmap(bitmap);
-                        caption = getCaption();
+
                         try {
                             byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
 
@@ -172,16 +175,21 @@ public class MainActivity extends AppCompatActivity {
                             List<Address> addresses;
                             geocoder = new Geocoder(this, Locale.getDefault());
 
-                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
-                            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                            // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                            String address = addresses.get(0).getAddressLine(0);
                             String city = addresses.get(0).getLocality();
                             String state = addresses.get(0).getAdminArea();
                             String country = addresses.get(0).getCountryName();
                             String postalCode = addresses.get(0).getPostalCode();
-                            String knownName = addresses.get(0).getFeatureName();
 
-                            dbHelper.addPhotoEntry(byteArray, imgFile.getName(), timeStamp, caption, latitude, longitude);
+                            Photo photo = new Photo(byteArray, imgFile.getName(), timeStamp);
+                            dbHelper.addPhotoEntry(photo);
+
+                            LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
+                            dbHelper.addLocationForPhoto(photo, locationInfo);
 
                             bitmapArrayList = dbHelper.getAllPhotos();
                             if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
@@ -198,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
                     String startDate = data.getStringExtra("startDate");
                     String endDate = data.getStringExtra("endDate");
                     String caption = data.getStringExtra("caption");
+                    String latitude = data.getStringExtra("latitude");
+                    String longitude = data.getStringExtra("longitude");
 
                     if(!TextUtils.isEmpty(startDate) && !TextUtils.isEmpty(endDate)) {
                         bitmapArrayList = dbHelper.getPhotosByDate(startDate, endDate);
@@ -216,6 +226,16 @@ public class MainActivity extends AppCompatActivity {
                             mImageView.setImageBitmap(bitmap);
                         }
                     }
+
+                    if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+                        bitmapArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
+                        if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
+                            currentPhotoIndex = bitmapArrayList.size() - 1;
+                            Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
+                            mImageView.setImageBitmap(bitmap);
+                        }
+                    }
+
                 }
                 break;
             default:
@@ -242,31 +262,5 @@ public class MainActivity extends AppCompatActivity {
     public void openSearchActivity(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
-    }
-
-    private String getCaption() {
-        final EditText captionEditText = new EditText(MainActivity.this);
-
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Caption");
-        alertDialog.setMessage("Insert a caption for this photo.");
-        alertDialog.setView(captionEditText, 50, 0, 50, 0);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Boolean emptyCaptionString = TextUtils.isEmpty(captionEditText.getText().toString());
-                        if (!emptyCaptionString) {
-                            caption = captionEditText.getText().toString();
-                        }
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-        return caption;
     }
 }

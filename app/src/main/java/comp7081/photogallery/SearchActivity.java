@@ -19,6 +19,8 @@ public class SearchActivity extends AppCompatActivity {
     EditText startDateField;
     EditText endDateField;
     EditText captionField;
+    EditText latitudeField;
+    EditText longitudeField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,8 @@ public class SearchActivity extends AppCompatActivity {
         startDateField = (EditText) findViewById(R.id.startDate);
         endDateField = (EditText) findViewById(R.id.endDate);
         captionField = (EditText) findViewById(R.id.caption);
+        latitudeField = (EditText) findViewById(R.id.latitudeEditText);
+        longitudeField = (EditText) findViewById(R.id.longitudeEditText);
     }
 
     public void onFilterSubmit(View view) {
@@ -37,6 +41,8 @@ public class SearchActivity extends AppCompatActivity {
         String startDate = startDateField.getText().toString();
         String endDate = endDateField.getText().toString();
         String caption = captionField.getText().toString();
+        String latitude = latitudeField.getText().toString();
+        String longitude = longitudeField.getText().toString();
 
         if(!TextUtils.isEmpty(startDate))
             matchingDatesIntent.putExtra("startDate", startDate);
@@ -46,6 +52,12 @@ public class SearchActivity extends AppCompatActivity {
 
         if(!TextUtils.isEmpty(caption))
             matchingDatesIntent.putExtra("caption", caption);
+
+        if(!TextUtils.isEmpty(latitude))
+            matchingDatesIntent.putExtra("latitude", latitude);
+
+        if(!TextUtils.isEmpty(longitude))
+            matchingDatesIntent.putExtra("longitude", longitude);
 
         setResult(RESULT_OK, matchingDatesIntent);
         finish();
