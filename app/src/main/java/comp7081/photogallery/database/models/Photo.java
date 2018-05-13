@@ -1,11 +1,14 @@
 package comp7081.photogallery.database.models;
 
+import android.graphics.Bitmap;
+
 public class Photo {
     int id;
     byte[] image;
     String name;
     String date;
     String caption;
+    Bitmap bitmap;
 
     public Photo() {
 
@@ -19,6 +22,13 @@ public class Photo {
 
     public Photo(byte[] image, String name, String date, String caption) {
         this.image = image;
+        this.name = name;
+        this.date = date;
+        this.caption = caption;
+    }
+
+    public Photo(Bitmap bitmap, String name, String date, String caption) {
+        this.bitmap = bitmap;
         this.name = name;
         this.date = date;
         this.caption = caption;
@@ -45,6 +55,10 @@ public class Photo {
         this.caption = caption;
     }
 
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
     // Getters
     public int getId() {
         return this.id;
@@ -66,4 +80,7 @@ public class Photo {
         return this.caption;
     }
 
+    public Bitmap getBitmap() {
+        return this.bitmap;
+    }
 }

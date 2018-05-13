@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
     int currentPhotoIndex = 0;
     ArrayList<Bitmap> bitmapArrayList;
+    ArrayList<Photo> photoArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
         dbHelper = new DatabaseHelper(getApplicationContext());
-        bitmapArrayList = dbHelper.getAllPhotos();
-        if (bitmapArrayList != null && bitmapArrayList.size() > 0) {
-            currentPhotoIndex = bitmapArrayList.size() - 1;
-            Bitmap lastBitmap = bitmapArrayList.get(currentPhotoIndex);
+        photoArrayList = dbHelper.getAllPhotos();
+        if (photoArrayList != null && photoArrayList.size() > 0) {
+            currentPhotoIndex = photoArrayList.size() - 1;
+            Bitmap lastBitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
             mImageView.setImageBitmap(lastBitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void previousOrNextPhoto(View view) {
-        if (bitmapArrayList != null && bitmapArrayList.size() > 0) {
+        if (photoArrayList != null && photoArrayList.size() > 0) {
             switch (view.getId()) {
                 case R.id.previousPhotoButton:
                     --currentPhotoIndex;
@@ -137,10 +138,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (currentPhotoIndex < 0)
                 currentPhotoIndex = 0;
-            if (currentPhotoIndex >= bitmapArrayList.size())
-                currentPhotoIndex = bitmapArrayList.size() - 1;
+            if (currentPhotoIndex >= photoArrayList.size())
+                currentPhotoIndex = photoArrayList.size() - 1;
 
-            Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
+            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
             mImageView.setImageBitmap(bitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
@@ -191,9 +192,9 @@ public class MainActivity extends AppCompatActivity {
                             LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
                             dbHelper.addLocationForPhoto(photo, locationInfo);
 
-                            bitmapArrayList = dbHelper.getAllPhotos();
-                            if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
-                                currentPhotoIndex = bitmapArrayList.size() - 1;
+                            photoArrayList = dbHelper.getAllPhotos();
+                            if(photoArrayList != null && photoArrayList.size() > 0) {
+                                currentPhotoIndex = photoArrayList.size() - 1;
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -210,28 +211,28 @@ public class MainActivity extends AppCompatActivity {
                     String longitude = data.getStringExtra("longitude");
 
                     if(!TextUtils.isEmpty(startDate) && !TextUtils.isEmpty(endDate)) {
-                        bitmapArrayList = dbHelper.getPhotosByDate(startDate, endDate);
-                        if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
-                            currentPhotoIndex = bitmapArrayList.size() - 1;
-                            Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
+                        photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
+                        if(photoArrayList != null && photoArrayList.size() > 0) {
+                            currentPhotoIndex = photoArrayList.size() - 1;
+                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
                             mImageView.setImageBitmap(bitmap);
                         }
                     }
 
                     if(!TextUtils.isEmpty(caption)) {
-                        bitmapArrayList = dbHelper.getPhotosByCaption(caption);
-                        if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
-                            currentPhotoIndex = bitmapArrayList.size() - 1;
-                            Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
+                        photoArrayList = dbHelper.getPhotosByCaption(caption);
+                        if(photoArrayList != null && photoArrayList.size() > 0) {
+                            currentPhotoIndex = photoArrayList.size() - 1;
+                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
                             mImageView.setImageBitmap(bitmap);
                         }
                     }
 
                     if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
-                        bitmapArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
-                        if(bitmapArrayList != null && bitmapArrayList.size() > 0) {
-                            currentPhotoIndex = bitmapArrayList.size() - 1;
-                            Bitmap bitmap = bitmapArrayList.get(currentPhotoIndex);
+                        photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
+                        if(photoArrayList != null && photoArrayList.size() > 0) {
+                            currentPhotoIndex = photoArrayList.size() - 1;
+                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
                             mImageView.setImageBitmap(bitmap);
                         }
                     }

@@ -104,11 +104,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         database.close();
     }
 
-    public ArrayList<Bitmap> getAllPhotos() {
-        SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE_PHOTOS;
+    public void deletePhotoEntry(Photo photo) throws SQLiteException {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.delete(DB_TABLE_PHOTOS, KEY_NAME + " = ?", new String[] {photo.getName()});
+        database.close();
+    }
 
-        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+    public ArrayList<Photo> getAllPhotos() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        String selectQuery =  "SELECT * FROM " + DB_TABLE_PHOTOS;
+
+        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, null);
@@ -117,14 +123,23 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             {
                 while(!cursor.isAfterLast())
                 {
-                    int index = cursor.getColumnIndexOrThrow("image");
-                    byte[] image = cursor.getBlob(index);
+                    int imageIndex = cursor.getColumnIndexOrThrow("image");
+                    int nameIndex = cursor.getColumnIndexOrThrow("name");
+                    int dateIndex = cursor.getColumnIndexOrThrow("date");
+                    int captionIndex = cursor.getColumnIndexOrThrow("caption");
+                    byte[] image = cursor.getBlob(imageIndex);
+                    String name = cursor.getString(nameIndex);
+                    String date = cursor.getString(dateIndex);
+                    String caption = cursor.getString(captionIndex);
+
                     Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    bitmapArray.add(bitmap);
+                    Photo photo = new Photo(bitmap, name, date, caption);
+                    photoArrayList.add(photo);
+
                     cursor.moveToNext();
                 }
                 cursor.close();
-                return bitmapArray;
+                return photoArrayList;
             }
             cursor.close();
         }
@@ -135,13 +150,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         return null;
     }
 
-    public ArrayList<Bitmap> getPhotosByDate(String startDate, String endDate) {
+    public ArrayList<Photo> getPhotosByDate(String startDate, String endDate) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE_PHOTOS +
+        String selectQuery =  "SELECT * " + " FROM " + DB_TABLE_PHOTOS +
                 " WHERE " + KEY_DATE + " BETWEEN " + "?" + " AND " + "?";
         String[] selectionArgs = new String[]{startDate, endDate};
 
-        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
@@ -150,14 +165,22 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             {
                 while(!cursor.isAfterLast())
                 {
-                    int index = cursor.getColumnIndexOrThrow("image");
-                    byte[] image = cursor.getBlob(index);
+                    int imageIndex = cursor.getColumnIndexOrThrow("image");
+                    int nameIndex = cursor.getColumnIndexOrThrow("name");
+                    int dateIndex = cursor.getColumnIndexOrThrow("date");
+                    int captionIndex = cursor.getColumnIndexOrThrow("caption");
+                    byte[] image = cursor.getBlob(imageIndex);
+                    String name = cursor.getString(nameIndex);
+                    String date = cursor.getString(dateIndex);
+                    String caption = cursor.getString(captionIndex);
+
                     Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    bitmapArray.add(bitmap);
+                    Photo photo = new Photo(bitmap, name, date, caption);
+                    photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
                 cursor.close();
-                return bitmapArray;
+                return photoArrayList;
             }
             cursor.close();
         }
@@ -168,13 +191,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         return null;
     }
 
-    public ArrayList<Bitmap> getPhotosByCaption(String caption) {
+    public ArrayList<Photo> getPhotosByCaption(String caption) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE_PHOTOS +
+        String selectQuery =  "SELECT * " + " FROM " + DB_TABLE_PHOTOS +
                 " WHERE " + KEY_CAPTION + "= ?";
         String[] selectionArgs = new String[]{caption};
 
-        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
@@ -183,14 +206,22 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             {
                 while(!cursor.isAfterLast())
                 {
-                    int index = cursor.getColumnIndexOrThrow("image");
-                    byte[] image = cursor.getBlob(index);
+                    int imageIndex = cursor.getColumnIndexOrThrow("image");
+                    int nameIndex = cursor.getColumnIndexOrThrow("name");
+                    int dateIndex = cursor.getColumnIndexOrThrow("date");
+                    int captionIndex = cursor.getColumnIndexOrThrow("caption");
+                    byte[] image = cursor.getBlob(imageIndex);
+                    String name = cursor.getString(nameIndex);
+                    String date = cursor.getString(dateIndex);
+                    String captionFromDB = cursor.getString(captionIndex);
+
                     Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    bitmapArray.add(bitmap);
+                    Photo photo = new Photo(bitmap, name, date, captionFromDB);
+                    photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
                 cursor.close();
-                return bitmapArray;
+                return photoArrayList;
             }
             cursor.close();
         }
@@ -229,15 +260,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         database.close();
     }
 
-    public ArrayList<Bitmap> getPhotosByLatLong(String latitude, String longitude) {
+    public ArrayList<Photo> getPhotosByLatLong(String latitude, String longitude) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery =  "SELECT " + KEY_IMAGE + " FROM " + DB_TABLE_PHOTOS +
+        String selectQuery =  "SELECT * " + " FROM " + DB_TABLE_PHOTOS +
                 " JOIN " + DB_TABLE_LOCATION + " ON " + DB_TABLE_PHOTOS + "." + KEY_NAME +
                 " = " + DB_TABLE_LOCATION + "." + KEY_PHOTO_NAME +
                 " WHERE " + KEY_LATITUDE + "= ?" + " AND " + KEY_LONGITUDE + " = ?";
         String[] selectionArgs = new String[] {latitude, longitude};
 
-        ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
@@ -246,14 +277,22 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             {
                 while(!cursor.isAfterLast())
                 {
-                    int index = cursor.getColumnIndexOrThrow("image");
-                    byte[] image = cursor.getBlob(index);
+                    int imageIndex = cursor.getColumnIndexOrThrow("image");
+                    int nameIndex = cursor.getColumnIndexOrThrow("name");
+                    int dateIndex = cursor.getColumnIndexOrThrow("date");
+                    int captionIndex = cursor.getColumnIndexOrThrow("caption");
+                    byte[] image = cursor.getBlob(imageIndex);
+                    String name = cursor.getString(nameIndex);
+                    String date = cursor.getString(dateIndex);
+                    String captionFromDB = cursor.getString(captionIndex);
+
                     Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    bitmapArray.add(bitmap);
+                    Photo photo = new Photo(bitmap, name, date, captionFromDB);
+                    photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
                 cursor.close();
-                return bitmapArray;
+                return photoArrayList;
             }
             cursor.close();
         }

@@ -3,28 +3,27 @@ package comp7081.photogallery;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
+import android.test.InstrumentationTestCase;
 import android.test.mock.MockContext;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
+import comp7081.photogallery.database.BitmapUtility;
 import comp7081.photogallery.database.DatabaseHelper;
 import comp7081.photogallery.database.models.Photo;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -39,10 +38,12 @@ public class SearchFilterTest {
     Context appContext;
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
+    Context ctx;
 
     @Before
     public void createDB() {
         appContext = InstrumentationRegistry.getTargetContext();
+        ctx = new MockContext();
         dbHelper = new DatabaseHelper(appContext);
         db = dbHelper.getReadableDatabase();
     }
@@ -53,91 +54,42 @@ public class SearchFilterTest {
     }
 
     @Test
-    public void testDbCreated() {
-        dbHelper = new DatabaseHelper(appContext);
-        assertTrue("DB didn't open", db.isOpen());
-        db.close();
-    }
-
-    @Test
-    public void testSaveAndGetPhoto() throws Exception {
-        Photo photo = new Photo();
-        photo.setName("JPG_2018_05-09_123456789");
-        photo.setDate("2018-05-09");
-        photo.setCaption("random");
-        dbHelper.addPhotoEntry(photo);
-        ArrayList<Bitmap> bitmapArrayList = new ArrayList<Bitmap>();
-    }
-
-    @Test
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-
         assertEquals("comp7081.photogallery", appContext.getPackageName());
     }
 
-    @Rule
-    public ActivityTestRule<MainActivity> mActivityRule =
-            new ActivityTestRule<>(MainActivity.class);
+    /*@Test
+    public void testSaveGetDeletePhoto() throws Exception {
+        Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), R.drawable.ic_action_test);
+        byte[] image = BitmapUtility.convertBitmapToByteArray(bitmap);
+        Random rand = new Random();
+        int randInt = rand.nextInt(100000000);
+        String randomName = "JPG_2018_05_09_" + String.valueOf(randInt);
+        Photo photo = new Photo();
+        photo.setImage(image);
+        photo.setName(randomName);
+        photo.setDate("2018-05-09");
+        photo.setCaption("random");
+        dbHelper.addPhotoEntry(photo);
+        ArrayList<Photo> photoArrayList = dbHelper.getAllPhotos();
+        int lastIndex = photoArrayList.size() - 1;
+        assertEquals(randomName, photoArrayList.get(lastIndex).getName());
+        assertEquals("2018-05-09", photoArrayList.get(lastIndex).getDate());
+        assertEquals("random", photoArrayList.get(lastIndex).getCaption());
+        dbHelper.deletePhotoEntry(photo);
+    }*/
 
     @Test
-    public void filterPhotosByDate() {
-        onView(withId(R.id.filterButton)).perform(click());
-
-        onView(withId(R.id.startDate))
-                .perform(typeText("2018-05-08"), closeSoftKeyboard());
-
-        onView(withId(R.id.endDate))
-                .perform(typeText("2018-05-08"), closeSoftKeyboard());
-
-        onView(withId(R.id.filterSubmitButton)).perform(click());
-
-        for (int i = 0; i <= 3; i++) {
-            onView(withId(R.id.previousPhotoButton)).perform(click());
-        }
-
-        for (int i = 0; i <= 3; i++) {
-            onView(withId(R.id.nextPhotoButton)).perform(click());
+    public void testGetPhotosByDate() {
+        String startDate = "2018-05-11";
+        String endDate = "2018-05-12";
+        int i;
+        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
+        for (i = 0; i < photoArrayList.size(); i++) {
+            assertEquals("2018-05-11", photoArrayList.get(i).getDate());
         }
     }
 
-    @Test
-    public void filterPhotosByCaption() {
-        onView(withId(R.id.filterButton)).perform(click());
-
-        onView(withId(R.id.caption))
-                .perform(typeText("lighthouse"), closeSoftKeyboard());
-
-        onView(withId(R.id.filterSubmitButton)).perform(click());
-
-        for (int i = 0; i <= 2; i++) {
-            onView(withId(R.id.previousPhotoButton)).perform(click());
-        }
-
-        for (int i = 0; i <= 2; i++) {
-            onView(withId(R.id.nextPhotoButton)).perform(click());
-        }
-    }
-
-    @Test
-    public void filterPhotosByLatLong() {
-        onView(withId(R.id.filterButton)).perform(click());
-
-        onView(withId(R.id.latitudeEditText))
-                .perform(typeText("37.422"), closeSoftKeyboard());
-
-        onView(withId(R.id.longitudeEditText))
-                .perform(typeText("-122.084"), closeSoftKeyboard());
-
-        onView(withId(R.id.filterSubmitButton)).perform(click());
-
-        for (int i = 0; i <= 3; i++) {
-            onView(withId(R.id.previousPhotoButton)).perform(click());
-        }
-
-        for (int i = 0; i <= 3; i++) {
-            onView(withId(R.id.nextPhotoButton)).perform(click());
-        }
-    }
 }
