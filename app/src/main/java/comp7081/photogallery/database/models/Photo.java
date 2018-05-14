@@ -9,6 +9,8 @@ public class Photo {
     String date;
     String caption;
     Bitmap bitmap;
+    String latitude;
+    String longitude;
 
     public Photo() {
 
@@ -59,6 +61,14 @@ public class Photo {
         this.bitmap = bitmap;
     }
 
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
     // Getters
     public int getId() {
         return this.id;
@@ -82,5 +92,13 @@ public class Photo {
 
     public Bitmap getBitmap() {
         return this.bitmap;
+    }
+
+    public String getLatitude() {
+        return this.latitude;
+    }
+
+    public String getLongitude() {
+        return this.longitude;
     }
 }

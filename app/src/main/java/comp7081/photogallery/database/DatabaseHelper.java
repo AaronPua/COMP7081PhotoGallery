@@ -104,12 +104,6 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         database.close();
     }
 
-    public void deletePhotoEntry(Photo photo) throws SQLiteException {
-        SQLiteDatabase database = this.getWritableDatabase();
-        database.delete(DB_TABLE_PHOTOS, KEY_NAME + " = ?", new String[] {photo.getName()});
-        database.close();
-    }
-
     public ArrayList<Photo> getAllPhotos() {
         SQLiteDatabase database = this.getReadableDatabase();
         String selectQuery =  "SELECT * FROM " + DB_TABLE_PHOTOS;
@@ -265,7 +259,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         String selectQuery =  "SELECT * " + " FROM " + DB_TABLE_PHOTOS +
                 " JOIN " + DB_TABLE_LOCATION + " ON " + DB_TABLE_PHOTOS + "." + KEY_NAME +
                 " = " + DB_TABLE_LOCATION + "." + KEY_PHOTO_NAME +
-                " WHERE " + KEY_LATITUDE + "= ?" + " AND " + KEY_LONGITUDE + " = ?";
+                " WHERE " + KEY_LATITUDE + " = ?" + " AND " + KEY_LONGITUDE + " = ?";
         String[] selectionArgs = new String[] {latitude, longitude};
 
         ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
@@ -281,13 +275,19 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                     int nameIndex = cursor.getColumnIndexOrThrow("name");
                     int dateIndex = cursor.getColumnIndexOrThrow("date");
                     int captionIndex = cursor.getColumnIndexOrThrow("caption");
+                    int latitudeIndex = cursor.getColumnIndexOrThrow("latitude");
+                    int longitudeIndex = cursor.getColumnIndexOrThrow("longitude");
                     byte[] image = cursor.getBlob(imageIndex);
                     String name = cursor.getString(nameIndex);
                     String date = cursor.getString(dateIndex);
-                    String captionFromDB = cursor.getString(captionIndex);
+                    String caption = cursor.getString(captionIndex);
+                    String latitudeFromDB = cursor.getString(latitudeIndex);
+                    String longitudeFromDB = cursor.getString(longitudeIndex);
 
                     Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    Photo photo = new Photo(bitmap, name, date, captionFromDB);
+                    Photo photo = new Photo(bitmap, name, date, caption);
+                    photo.setLatitude(latitudeFromDB);
+                    photo.setLongitude(longitudeFromDB);
                     photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
