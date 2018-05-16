@@ -65,7 +65,7 @@ public class UITest {
         onView(withId(R.id.filterButton)).perform(click());
 
         onView(withId(R.id.caption))
-                .perform(typeText("lighthouse"), closeSoftKeyboard());
+                .perform(typeText("zebra"), closeSoftKeyboard());
 
         onView(withId(R.id.filterSubmitButton)).perform(click());
 
