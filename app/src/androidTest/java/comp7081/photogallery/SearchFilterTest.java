@@ -42,7 +42,7 @@ public class SearchFilterTest {
 
     @After
     public void tearDown() throws Exception {
-        db.close();
+        //db.close();
     }
 
     @Test
@@ -55,6 +55,7 @@ public class SearchFilterTest {
             for(Photo photo : photoArrayList) {
                 assertEquals(startDate, photo.getDate());
             }
+            // Not using db.setTransactionSuccessful() so the db is not affected.
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -71,6 +72,7 @@ public class SearchFilterTest {
             for(Photo photo : photoArrayList) {
                 assertEquals(caption, photo.getCaption());
             }
+            // Not using db.setTransactionSuccessful() so the db is not affected.
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -89,6 +91,7 @@ public class SearchFilterTest {
                 assertEquals(latitude, photo.getLatitude());
                 assertEquals(longitude, photo.getLongitude());
             }
+            // Not using db.setTransactionSuccessful() so the db is not affected.
         } catch (Exception ex) {
             ex.printStackTrace();
         }

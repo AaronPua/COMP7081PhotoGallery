@@ -44,18 +44,18 @@ public class UITest {
         onView(withId(R.id.filterButton)).perform(click());
 
         onView(withId(R.id.startDate))
-                .perform(typeText("2018-05-08"), closeSoftKeyboard());
+                .perform(typeText("2018-05-13"), closeSoftKeyboard());
 
         onView(withId(R.id.endDate))
-                .perform(typeText("2018-05-08"), closeSoftKeyboard());
+                .perform(typeText("2018-05-13"), closeSoftKeyboard());
 
         onView(withId(R.id.filterSubmitButton)).perform(click());
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 2; i++) {
             onView(withId(R.id.previousPhotoButton)).perform(click());
         }
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 2; i++) {
             onView(withId(R.id.nextPhotoButton)).perform(click());
         }
     }
@@ -90,11 +90,11 @@ public class UITest {
 
         onView(withId(R.id.filterSubmitButton)).perform(click());
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 2; i++) {
             onView(withId(R.id.previousPhotoButton)).perform(click());
         }
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 2; i++) {
             onView(withId(R.id.nextPhotoButton)).perform(click());
         }
     }
