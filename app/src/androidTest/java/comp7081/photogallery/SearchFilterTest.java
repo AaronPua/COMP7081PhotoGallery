@@ -42,41 +42,25 @@ public class SearchFilterTest {
 
     @After
     public void tearDown() throws Exception {
-        //db.close();
+        db.close();
     }
 
     @Test
     public void testGetPhotosByDate() throws Exception {
         String startDate = "2018-05-13";
         String endDate = "2018-05-13";
-        db.beginTransaction();
-        try {
-            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
-            for(Photo photo : photoArrayList) {
-                assertEquals(startDate, photo.getDate());
-            }
-            // Not using db.setTransactionSuccessful() so the db is not affected.
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            db.endTransaction();
+        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
+        for (Photo photo : photoArrayList) {
+            assertEquals(startDate, photo.getDate());
         }
     }
 
     @Test
     public void testGetPhotosByCaption() throws Exception {
         String caption = "zebra";
-        db.beginTransaction();
-        try {
-            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByCaption(caption);
-            for(Photo photo : photoArrayList) {
-                assertEquals(caption, photo.getCaption());
-            }
-            // Not using db.setTransactionSuccessful() so the db is not affected.
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            db.endTransaction();
+        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByCaption(caption);
+        for (Photo photo : photoArrayList) {
+            assertEquals(caption, photo.getCaption());
         }
     }
 
@@ -84,16 +68,10 @@ public class SearchFilterTest {
     public void testGetPhotosByLatLong() throws Exception {
         String latitude = "37.422";
         String longitude = "-122.084";
-        db.beginTransaction();
-        try {
-            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
-            for(Photo photo : photoArrayList) {
-                assertEquals(latitude, photo.getLatitude());
-                assertEquals(longitude, photo.getLongitude());
-            }
-            // Not using db.setTransactionSuccessful() so the db is not affected.
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
+        for (Photo photo : photoArrayList) {
+            assertEquals(latitude, photo.getLatitude());
+            assertEquals(longitude, photo.getLongitude());
         }
     }
 }
