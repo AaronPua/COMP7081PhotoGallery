@@ -181,7 +181,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         catch (SQLiteException ex) {
             ex.printStackTrace();
         }
-        database.close();
+        //database.close();
         return null;
     }
 
@@ -222,7 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         catch (SQLiteException ex) {
             ex.printStackTrace();
         }
-        database.close();
+        //database.close();
         return null;
     }
 
@@ -235,7 +235,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         id = id + 1;
 
         database.update(DB_TABLE_PHOTOS, cv, KEY_TABLE_ID + " = ?", new String[] {String.valueOf(id)});
-        database.close();
+        //database.close();
     }
 
     public void addLocationForPhoto(Photo photo, LocationInfo locationInfo) throws SQLiteException {
@@ -251,7 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         cv.put(KEY_POSTAL, locationInfo.getPostalCode());
 
         database.insert(DB_TABLE_LOCATION, null, cv);
-        database.close();
+        //database.close();
     }
 
     public ArrayList<Photo> getPhotosByLatLong(String latitude, String longitude) {
@@ -299,7 +299,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         catch (SQLiteException ex) {
             ex.printStackTrace();
         }
-        database.close();
+        //database.close();
         return null;
     }
 }
