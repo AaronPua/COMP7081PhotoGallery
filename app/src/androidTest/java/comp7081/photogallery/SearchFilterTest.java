@@ -50,8 +50,10 @@ public class SearchFilterTest {
         String startDate = "2018-05-13";
         String endDate = "2018-05-13";
         ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
-        for (Photo photo : photoArrayList) {
-            assertEquals(startDate, photo.getDate());
+        if(photoArrayList != null) {
+            for (Photo photo : photoArrayList) {
+                assertEquals(startDate, photo.getDate());
+            }
         }
     }
 
@@ -59,8 +61,10 @@ public class SearchFilterTest {
     public void testGetPhotosByCaption() throws Exception {
         String caption = "zebra";
         ArrayList<Photo> photoArrayList = dbHelper.getPhotosByCaption(caption);
-        for (Photo photo : photoArrayList) {
-            assertEquals(caption, photo.getCaption());
+        if(photoArrayList != null) {
+            for (Photo photo : photoArrayList) {
+                assertEquals(caption, photo.getCaption());
+            }
         }
     }
 
@@ -69,9 +73,11 @@ public class SearchFilterTest {
         String latitude = "37.422";
         String longitude = "-122.084";
         ArrayList<Photo> photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
-        for (Photo photo : photoArrayList) {
-            assertEquals(latitude, photo.getLatitude());
-            assertEquals(longitude, photo.getLongitude());
+        if(photoArrayList != null) {
+            for (Photo photo : photoArrayList) {
+                assertEquals(latitude, photo.getLatitude());
+                assertEquals(longitude, photo.getLongitude());
+            }
         }
     }
 }
