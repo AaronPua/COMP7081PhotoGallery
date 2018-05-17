@@ -45,39 +45,77 @@ public class SearchFilterTest {
         db.close();
     }
 
+    private void createPhoto() throws Exception {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_test);
+        byte[] image = BitmapUtility.convertBitmapToByteArray(bitmap);
+        Random rand = new Random();
+        int randInt = rand.nextInt(100000000);
+        String randomName = "JPG_2018_05_13_" + String.valueOf(randInt);
+        Photo photo = new Photo();
+        photo.setImage(image);
+        photo.setName(randomName);
+        photo.setDate("2018-05-13");
+        photo.setCaption("zebra");
+        dbHelper.addPhotoEntry(photo);
+    }
+
     @Test
     public void testGetPhotosByDate() throws Exception {
         String startDate = "2018-05-13";
         String endDate = "2018-05-13";
-        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
-        if(photoArrayList != null) {
-            for (Photo photo : photoArrayList) {
-                assertEquals(startDate, photo.getDate());
+        db.beginTransaction();
+        try {
+            createPhoto();
+            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
+            if(photoArrayList != null) {
+                for (Photo photo : photoArrayList) {
+                    assertEquals(startDate, photo.getDate());
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        db.endTransaction();
+        db.close();
     }
 
     @Test
     public void testGetPhotosByCaption() throws Exception {
         String caption = "zebra";
-        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByCaption(caption);
-        if(photoArrayList != null) {
-            for (Photo photo : photoArrayList) {
-                assertEquals(caption, photo.getCaption());
+        db.beginTransaction();
+        try {
+            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByCaption(caption);
+            if(photoArrayList != null) {
+                for (Photo photo : photoArrayList) {
+                    assertEquals(caption, photo.getCaption());
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        db.endTransaction();
+        db.close();
     }
 
     @Test
     public void testGetPhotosByLatLong() throws Exception {
         String latitude = "37.422";
         String longitude = "-122.084";
-        ArrayList<Photo> photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
-        if(photoArrayList != null) {
-            for (Photo photo : photoArrayList) {
-                assertEquals(latitude, photo.getLatitude());
-                assertEquals(longitude, photo.getLongitude());
+        db.beginTransaction();
+        try {
+            createPhoto();
+            ArrayList<Photo> photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
+            if(photoArrayList != null) {
+                for (Photo photo : photoArrayList) {
+                    assertEquals(latitude, photo.getLatitude());
+                    assertEquals(longitude, photo.getLongitude());
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        db.endTransaction();
+        db.close();
+
     }
 }
