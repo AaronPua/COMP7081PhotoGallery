@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void openSearchActivity(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
     public void openCameraApp(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -154,52 +159,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK) {
-                    File imgFile = new File(mCurrentPhotoPath);
-                    if (imgFile.exists()) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                        mImageView.setImageBitmap(bitmap);
-
-                        try {
-                            byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
-
-                            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                                    != PackageManager.PERMISSION_GRANTED
-                                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                    != PackageManager.PERMISSION_GRANTED) {
-                            }
-                            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            latitude = location.convert(location.getLatitude(), location.FORMAT_DEGREES);
-                            longitude = location.convert(location.getLongitude(), location.FORMAT_DEGREES);
-
-                            Geocoder geocoder;
-                            List<Address> addresses;
-                            geocoder = new Geocoder(this, Locale.getDefault());
-
-                            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-                            // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                            String address = addresses.get(0).getAddressLine(0);
-                            String city = addresses.get(0).getLocality();
-                            String state = addresses.get(0).getAdminArea();
-                            String country = addresses.get(0).getCountryName();
-                            String postalCode = addresses.get(0).getPostalCode();
-
-                            Photo photo = new Photo(byteArray, imgFile.getName(), timeStamp);
-                            dbHelper.addPhotoEntry(photo);
-
-                            LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
-                            dbHelper.addLocationForPhoto(photo, locationInfo);
-
-                            photoArrayList = dbHelper.getAllPhotos();
-                            if(photoArrayList != null && photoArrayList.size() > 0) {
-                                currentPhotoIndex = photoArrayList.size() - 1;
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    processCapturedImage(mCurrentPhotoPath);
                 }
                 break;
             case SEARCH_ACTIVITY_REQUEST_CODE:
@@ -209,34 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     String caption = data.getStringExtra("caption");
                     String latitude = data.getStringExtra("latitude");
                     String longitude = data.getStringExtra("longitude");
-
-                    if(!TextUtils.isEmpty(startDate) && !TextUtils.isEmpty(endDate)) {
-                        photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
-                        if(photoArrayList != null && photoArrayList.size() > 0) {
-                            currentPhotoIndex = photoArrayList.size() - 1;
-                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
-                            mImageView.setImageBitmap(bitmap);
-                        }
-                    }
-
-                    if(!TextUtils.isEmpty(caption)) {
-                        photoArrayList = dbHelper.getPhotosByCaption(caption);
-                        if(photoArrayList != null && photoArrayList.size() > 0) {
-                            currentPhotoIndex = photoArrayList.size() - 1;
-                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
-                            mImageView.setImageBitmap(bitmap);
-                        }
-                    }
-
-                    if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
-                        photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
-                        if(photoArrayList != null && photoArrayList.size() > 0) {
-                            currentPhotoIndex = photoArrayList.size() - 1;
-                            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
-                            mImageView.setImageBitmap(bitmap);
-                        }
-                    }
-
+                    getImagesByFilters(startDate, endDate, caption, latitude, longitude);
                 }
                 break;
             default:
@@ -260,8 +193,77 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
-    public void openSearchActivity(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    private void getImagesByFilters(String startDate, String endDate, String caption, String latitude, String longitude) {
+        if(!TextUtils.isEmpty(startDate) && !TextUtils.isEmpty(endDate)) {
+            photoArrayList = dbHelper.getPhotosByDate(startDate, endDate);
+            setImageBitmapForFilters(photoArrayList, mImageView);
+        }
+
+        if(!TextUtils.isEmpty(caption)) {
+            photoArrayList = dbHelper.getPhotosByCaption(caption);
+            setImageBitmapForFilters(photoArrayList, mImageView);
+        }
+
+        if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+            photoArrayList = dbHelper.getPhotosByLatLong(latitude, longitude);
+            setImageBitmapForFilters(photoArrayList, mImageView);
+        }
+
+    }
+
+    private void setImageBitmapForFilters(ArrayList<Photo> photoArrayList, ImageView mImageView) {
+        if(photoArrayList != null && photoArrayList.size() > 0) {
+            currentPhotoIndex = photoArrayList.size() - 1;
+            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
+            mImageView.setImageBitmap(bitmap);
+        }
+    }
+
+    private void processCapturedImage(String mCurrentPhotoPath) {
+        File imgFile = new File(mCurrentPhotoPath);
+        if (imgFile.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            mImageView.setImageBitmap(bitmap);
+
+            try {
+                byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
+
+                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {}
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                latitude = location.convert(location.getLatitude(), location.FORMAT_DEGREES);
+                longitude = location.convert(location.getLongitude(), location.FORMAT_DEGREES);
+
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(this, Locale.getDefault());
+
+                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+
+                Photo photo = new Photo(byteArray, imgFile.getName(), timeStamp);
+                dbHelper.addPhotoEntry(photo);
+
+                LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
+                dbHelper.addLocationForPhoto(photo, locationInfo);
+
+                photoArrayList = dbHelper.getAllPhotos();
+                if(photoArrayList != null && photoArrayList.size() > 0) {
+                    currentPhotoIndex = photoArrayList.size() - 1;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
