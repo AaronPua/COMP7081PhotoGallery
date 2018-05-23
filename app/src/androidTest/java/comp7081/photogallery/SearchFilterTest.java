@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Random;
 
-import comp7081.photogallery.database.BitmapUtility;
+import comp7081.photogallery.Helpers.BitmapUtility;
 import comp7081.photogallery.database.DatabaseHelper;
 import comp7081.photogallery.database.models.Photo;
 

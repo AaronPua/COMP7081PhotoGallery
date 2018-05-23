@@ -7,11 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 
+import comp7081.photogallery.Helpers.BitmapUtility;
 import comp7081.photogallery.database.models.LocationInfo;
 import comp7081.photogallery.database.models.Photo;
 

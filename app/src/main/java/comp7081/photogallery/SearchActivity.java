@@ -1,15 +1,11 @@
 package comp7081.photogallery;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-
-import java.util.ArrayList;
 
 import comp7081.photogallery.database.DatabaseHelper;
 

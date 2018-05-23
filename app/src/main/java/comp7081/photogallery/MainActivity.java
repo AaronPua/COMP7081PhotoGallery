@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import comp7081.photogallery.database.BitmapUtility;
+import comp7081.photogallery.Helpers.BitmapUtility;
 import comp7081.photogallery.database.DatabaseHelper;
 import comp7081.photogallery.database.models.LocationInfo;
 import comp7081.photogallery.database.models.Photo;
@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     Uri photoURI;
     DatabaseHelper dbHelper;
     int currentPhotoIndex = 0;
-    ArrayList<Bitmap> bitmapArrayList;
     ArrayList<Photo> photoArrayList;
 
     @Override
