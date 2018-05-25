@@ -52,7 +52,7 @@ public class SearchFilterTest {
         int randInt = rand.nextInt(100000000);
         String randomName = "JPG_2018_05_13_" + String.valueOf(randInt);
         Photo photo = new Photo();
-        photo.setImage(image);
+        //photo.setImage(image);
         photo.setName(randomName);
         photo.setDate("2018-05-13");
         photo.setCaption("zebra");

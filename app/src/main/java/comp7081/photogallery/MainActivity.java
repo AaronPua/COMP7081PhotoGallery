@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         photoArrayList = dbHelper.getAllPhotos();
         if (photoArrayList != null && photoArrayList.size() > 0) {
             currentPhotoIndex = photoArrayList.size() - 1;
-            Bitmap lastBitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
+            Bitmap lastBitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
             mImageView.setImageBitmap(lastBitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             if (currentPhotoIndex >= photoArrayList.size())
                 currentPhotoIndex = photoArrayList.size() - 1;
 
-            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
+            Bitmap bitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
             mImageView.setImageBitmap(bitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     private void setImageBitmapForFilters(ArrayList<Photo> photoArrayList, ImageView mImageView) {
         if(photoArrayList != null && photoArrayList.size() > 0) {
             currentPhotoIndex = photoArrayList.size() - 1;
-            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
+            Bitmap bitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
             mImageView.setImageBitmap(bitmap);
         }
     }
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
             mImageView.setImageBitmap(bitmap);
 
             try {
-                byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
+                //byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
 
                 LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 String country = addresses.get(0).getCountryName();
                 String postalCode = addresses.get(0).getPostalCode();
 
-                Photo photo = new Photo(byteArray, imgFile.getName(), timeStamp);
+                Photo photo = new Photo(mCurrentPhotoPath, imgFile.getName(), timeStamp);
                 dbHelper.addPhotoEntry(photo);
 
                 LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
