@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -150,6 +151,33 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
+    }
+
+    public void rotatePhotoDialog(View view) {
+        final EditText rotateEditText = new EditText(MainActivity.this);
+        rotateEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("Rotate Photo");
+        alertDialog.setMessage("Ex: 45 to rotate clockwise, -90 for counterclockwise.");
+        alertDialog.setView(rotateEditText, 50, 0, 50, 0);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Rotate",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Boolean emptyRotateString = TextUtils.isEmpty(rotateEditText.getText().toString());
+                        if (!emptyRotateString) {
+                            String rotationAngle = rotateEditText.getText().toString();
+                            //Bitmap rotatedBitmap = BitmapUtility.rotateBitmap();
+                            dbHelper.updateFilePath((currentPhotoIndex), mCurrentPhotoPath);
+                        }
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override

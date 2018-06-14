@@ -239,6 +239,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         //database.close();
     }
 
+    public void updateFilePath(int id, String imagePath) {
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_IMAGE, imagePath);
+
+        // id + 1 because of bitmapArrayList.size() - 1.
+        id = id + 1;
+
+        database.update(DB_TABLE_PHOTOS, cv, KEY_TABLE_ID + " = ?", new String[] {String.valueOf(id)});
+    }
+
     public void addLocationForPhoto(Photo photo, LocationInfo locationInfo) throws SQLiteException {
         //SQLiteDatabase database = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
