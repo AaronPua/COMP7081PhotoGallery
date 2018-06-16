@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
     int currentPhotoIndex = 0;
     ArrayList<Photo> photoArrayList;
+    Location location;
+    double currentLat;
+    double currentLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -260,16 +264,35 @@ public class MainActivity extends AppCompatActivity {
                         != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {}
-                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                /*Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latitude = location.convert(location.getLatitude(), location.FORMAT_DEGREES);
-                longitude = location.convert(location.getLongitude(), location.FORMAT_DEGREES);
+                longitude = location.convert(location.getLongitude(), location.FORMAT_DEGREES);*/
+
+                if (lm.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null) {
+                    location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    currentLat = location.getLatitude();
+                    currentLong = location.getLongitude();
+                    latitude = location.convert(currentLat, location.FORMAT_DEGREES);
+                    longitude = location.convert(currentLong, location.FORMAT_DEGREES);
+                } else if (lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) != null) {
+                    location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    latitude = location.convert(currentLat, location.FORMAT_DEGREES);
+                    longitude = location.convert(currentLong, location.FORMAT_DEGREES);
+                } else {
+                    currentLat = 37.422;
+                    currentLong = -122.084;
+                    latitude = location.convert(currentLat, location.FORMAT_DEGREES);
+                    longitude = location.convert(currentLong, location.FORMAT_DEGREES);
+                    Toast.makeText(getApplicationContext(), "GPS and Network not enabled. Defaulting " +
+                            "to home coordinates.", Toast.LENGTH_SHORT);
+                }
 
                 Geocoder geocoder;
                 List<Address> addresses;
                 geocoder = new Geocoder(this, Locale.getDefault());
 
                 // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                addresses = geocoder.getFromLocation(currentLat, currentLong, 1);
 
                 // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                 String address = addresses.get(0).getAddressLine(0);
