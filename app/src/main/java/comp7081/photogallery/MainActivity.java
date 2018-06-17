@@ -264,10 +264,6 @@ public class MainActivity extends AppCompatActivity {
                         != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {}
-                /*Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                latitude = location.convert(location.getLatitude(), location.FORMAT_DEGREES);
-                longitude = location.convert(location.getLongitude(), location.FORMAT_DEGREES);*/
-
                 if (lm.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null) {
                     location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     currentLat = location.getLatitude();
