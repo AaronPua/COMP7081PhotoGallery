@@ -35,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
 
     // LocationInfo Table Column Names
     private static final String KEY_LOCATION_ID = "id";
-    private static final String KEY_IMAGE_FK = "image";
+    private static final String KEY_NAME_FK = "name";
     private static final String KEY_LATITUDE = "latitude";
     private static final String KEY_LONGITUDE = "longitude";
     private static final String KEY_ADDRESS = "address";
@@ -47,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
     // Photos Table Create Statement
     private static final String CREATE_TABLE_PHOTOS = "CREATE TABLE " + DB_TABLE_PHOTOS + "("+
             KEY_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            KEY_IMAGE + " TEXT," +
+            KEY_IMAGE + " BLOB," +
             KEY_NAME + " TEXT," +
             KEY_DATE + " TEXT," +
             KEY_CAPTION + " TEXT);";
@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
     // Location Table Create Statement
     private static final String CREATE_TABLE_LOCATIONS = "CREATE TABLE " + DB_TABLE_LOCATION + "("+
             KEY_LOCATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            KEY_IMAGE_FK + " TEXT," +
+            KEY_NAME_FK + " TEXT," +
             KEY_LATITUDE + " TEXT," +
             KEY_LONGITUDE + " TEXT," +
             KEY_ADDRESS + " TEXT," +
@@ -63,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
             KEY_STATE + " TEXT," +
             KEY_COUNTRY + " TEXT," +
             KEY_POSTAL + " TEXT, " +
-            "FOREIGN KEY " + "(" + KEY_IMAGE_FK + ") REFERENCES " + DB_TABLE_PHOTOS + "(" + KEY_IMAGE + "))";
+            "FOREIGN KEY " + "(" + KEY_NAME_FK + ") REFERENCES " + DB_TABLE_PHOTOS + "(" + KEY_IMAGE + "))";
 
     private static final String PRAGMA_FOREIGN_KEY = "PRAGMA foreign_keys = ON;";
 
@@ -122,13 +122,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                     int nameIndex = cursor.getColumnIndexOrThrow("name");
                     int dateIndex = cursor.getColumnIndexOrThrow("date");
                     int captionIndex = cursor.getColumnIndexOrThrow("caption");
-                    String image = cursor.getString(imageIndex);
+                    byte[] image = cursor.getBlob(imageIndex);
                     String name = cursor.getString(nameIndex);
                     String date = cursor.getString(dateIndex);
                     String caption = cursor.getString(captionIndex);
 
-                    //Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    Photo photo = new Photo(image, name, date, caption);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
+                    Photo photo = new Photo(bitmap, name, date, caption);
                     photoArrayList.add(photo);
 
                     cursor.moveToNext();
@@ -164,13 +164,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                     int nameIndex = cursor.getColumnIndexOrThrow("name");
                     int dateIndex = cursor.getColumnIndexOrThrow("date");
                     int captionIndex = cursor.getColumnIndexOrThrow("caption");
-                    String image = cursor.getString(imageIndex);
+                    byte[] image = cursor.getBlob(imageIndex);
                     String name = cursor.getString(nameIndex);
                     String date = cursor.getString(dateIndex);
                     String caption = cursor.getString(captionIndex);
 
-                    //Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    Photo photo = new Photo(image, name, date, caption);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
+                    Photo photo = new Photo(bitmap, name, date, caption);
                     photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
@@ -205,13 +205,13 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                     int nameIndex = cursor.getColumnIndexOrThrow("name");
                     int dateIndex = cursor.getColumnIndexOrThrow("date");
                     int captionIndex = cursor.getColumnIndexOrThrow("caption");
-                    String image = cursor.getString(imageIndex);
+                    byte[] image = cursor.getBlob(imageIndex);
                     String name = cursor.getString(nameIndex);
                     String date = cursor.getString(dateIndex);
                     String captionFromDB = cursor.getString(captionIndex);
 
-                    //Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    Photo photo = new Photo(image, name, date, captionFromDB);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
+                    Photo photo = new Photo(bitmap, name, date, captionFromDB);
                     photoArrayList.add(photo);
                     cursor.moveToNext();
                 }
@@ -252,7 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
     public void addLocationForPhoto(Photo photo, LocationInfo locationInfo) throws SQLiteException {
         //SQLiteDatabase database = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(KEY_IMAGE_FK, photo.getImage());
+        cv.put(KEY_NAME_FK, photo.getName());
         cv.put(KEY_LATITUDE, locationInfo.getLatitude());
         cv.put(KEY_LONGITUDE, locationInfo.getLongitude());
         cv.put(KEY_ADDRESS, locationInfo.getAddress());
@@ -269,7 +269,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         //SQLiteDatabase database = this.getReadableDatabase();
         String selectQuery =  "SELECT * " + " FROM " + DB_TABLE_PHOTOS +
                 " JOIN " + DB_TABLE_LOCATION + " ON " + DB_TABLE_PHOTOS + "." + KEY_IMAGE +
-                " = " + DB_TABLE_LOCATION + "." + KEY_IMAGE_FK +
+                " = " + DB_TABLE_LOCATION + "." + KEY_NAME_FK +
                 " WHERE " + KEY_LATITUDE + " = ?" + " AND " + KEY_LONGITUDE + " = ?";
         String[] selectionArgs = new String[] {latitude, longitude};
 
@@ -288,15 +288,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                     int captionIndex = cursor.getColumnIndexOrThrow("caption");
                     int latitudeIndex = cursor.getColumnIndexOrThrow("latitude");
                     int longitudeIndex = cursor.getColumnIndexOrThrow("longitude");
-                    String image = cursor.getString(imageIndex);
+                    byte[] image = cursor.getBlob(imageIndex);
                     String name = cursor.getString(nameIndex);
                     String date = cursor.getString(dateIndex);
                     String caption = cursor.getString(captionIndex);
                     String latitudeFromDB = cursor.getString(latitudeIndex);
                     String longitudeFromDB = cursor.getString(longitudeIndex);
 
-                    //Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
-                    Photo photo = new Photo(image, name, date, caption);
+                    Bitmap bitmap = BitmapUtility.getImageFromBitmap(image);
+                    Photo photo = new Photo(bitmap, name, date, caption);
                     photo.setLatitude(latitudeFromDB);
                     photo.setLongitude(longitudeFromDB);
                     photoArrayList.add(photo);

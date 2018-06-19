@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 public class Photo {
     int id;
-    String image;
+    byte[] image;
     String name;
     String date;
     String caption;
@@ -16,17 +16,10 @@ public class Photo {
 
     }
 
-    public Photo(String image, String name, String date) {
+    public Photo(byte[] image, String name, String date) {
         this.image = image;
         this.name = name;
         this.date = date;
-    }
-
-    public Photo(String image, String name, String date, String caption) {
-        this.image = image;
-        this.name = name;
-        this.date = date;
-        this.caption = caption;
     }
 
     public Photo(Bitmap bitmap, String name, String date, String caption) {
@@ -41,7 +34,7 @@ public class Photo {
         this.id = id;
     }
 
-    public void setImage(String image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 
@@ -74,7 +67,7 @@ public class Photo {
         return this.id;
     }
 
-    public String getImage() {
+    public byte[] getImage() {
         return this.image;
     }
 

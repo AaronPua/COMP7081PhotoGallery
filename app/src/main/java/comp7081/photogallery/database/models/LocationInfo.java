@@ -17,6 +17,11 @@ public class LocationInfo {
 
     }
 
+    public LocationInfo(String latitude, String longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public LocationInfo(String latitude, String longitude, String address, String city, String state, String country, String postalCode) {
         this.latitude = latitude;
         this.longitude = longitude;

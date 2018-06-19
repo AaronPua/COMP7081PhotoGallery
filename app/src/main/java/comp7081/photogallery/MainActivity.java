@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     String caption;
     String latitude;
     String longitude;
+    String address;
+    String city;
+    String state;
+    String country;
+    String postalCode;
     Uri photoURI;
     DatabaseHelper dbHelper;
     int currentPhotoIndex = 0;
@@ -73,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         photoArrayList = dbHelper.getAllPhotos();
         if (photoArrayList != null && photoArrayList.size() > 0) {
             currentPhotoIndex = photoArrayList.size() - 1;
-            Bitmap lastBitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
+            Bitmap lastBitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
             mImageView.setImageBitmap(lastBitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
@@ -150,38 +155,11 @@ public class MainActivity extends AppCompatActivity {
             if (currentPhotoIndex >= photoArrayList.size())
                 currentPhotoIndex = photoArrayList.size() - 1;
 
-            Bitmap bitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
+            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
             mImageView.setImageBitmap(bitmap);
         } else {
             mImageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
-    }
-
-    public void rotatePhotoDialog(View view) {
-        final EditText rotateEditText = new EditText(MainActivity.this);
-        rotateEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Rotate Photo");
-        alertDialog.setMessage("Ex: 45 to rotate clockwise, -90 for counterclockwise.");
-        alertDialog.setView(rotateEditText, 50, 0, 50, 0);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Rotate",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Boolean emptyRotateString = TextUtils.isEmpty(rotateEditText.getText().toString());
-                        if (!emptyRotateString) {
-                            String rotationAngle = rotateEditText.getText().toString();
-                            //Bitmap rotatedBitmap = BitmapUtility.rotateBitmap();
-                            dbHelper.updateFilePath((currentPhotoIndex), mCurrentPhotoPath);
-                        }
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 
     @Override
@@ -245,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     private void setImageBitmapForFilters(ArrayList<Photo> photoArrayList, ImageView mImageView) {
         if(photoArrayList != null && photoArrayList.size() > 0) {
             currentPhotoIndex = photoArrayList.size() - 1;
-            Bitmap bitmap = BitmapFactory.decodeFile(photoArrayList.get(currentPhotoIndex).getImage());
+            Bitmap bitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
             mImageView.setImageBitmap(bitmap);
         }
     }
@@ -257,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             mImageView.setImageBitmap(bitmap);
 
             try {
-                //byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
+                byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
 
                 LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -272,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
                     longitude = location.convert(currentLong, location.FORMAT_DEGREES);
                 } else if (lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) != null) {
                     location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    currentLat = location.getLatitude();
+                    currentLong = location.getLongitude();
                     latitude = location.convert(currentLat, location.FORMAT_DEGREES);
                     longitude = location.convert(currentLong, location.FORMAT_DEGREES);
                 } else {
@@ -280,24 +260,33 @@ public class MainActivity extends AppCompatActivity {
                     latitude = location.convert(currentLat, location.FORMAT_DEGREES);
                     longitude = location.convert(currentLong, location.FORMAT_DEGREES);
                     Toast.makeText(getApplicationContext(), "GPS and Network not enabled. Defaulting " +
-                            "to home coordinates.", Toast.LENGTH_SHORT);
+                            "to home coordinates.", Toast.LENGTH_SHORT).show();
                 }
 
                 Geocoder geocoder;
                 List<Address> addresses;
                 geocoder = new Geocoder(this, Locale.getDefault());
 
-                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                addresses = geocoder.getFromLocation(currentLat, currentLong, 1);
+                try {
+                    // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    addresses = geocoder.getFromLocation(currentLat, currentLong, 1);
 
-                // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                String address = addresses.get(0).getAddressLine(0);
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
+                    // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                    address = addresses.get(0).getAddressLine(0);
+                    city = addresses.get(0).getLocality();
+                    state = addresses.get(0).getAdminArea();
+                    country = addresses.get(0).getCountryName();
+                    postalCode = addresses.get(0).getPostalCode();
+                } catch (IOException e) {
+                    Log.e("TAG", "getFromLocation: got IOException", e);
+                    address = "1599 Amphitheatre Pkwy, Mountain View, CA 94043, USA";
+                    city = "Mountain View";
+                    state = "California";
+                    country = "United States";
+                    postalCode = "94043";
+                }
 
-                Photo photo = new Photo(mCurrentPhotoPath, imgFile.getName(), timeStamp);
+                Photo photo = new Photo(byteArray, imgFile.getName(), timeStamp);
                 dbHelper.addPhotoEntry(photo);
 
                 LocationInfo locationInfo = new LocationInfo(latitude, longitude, address, city, state, country, postalCode);
