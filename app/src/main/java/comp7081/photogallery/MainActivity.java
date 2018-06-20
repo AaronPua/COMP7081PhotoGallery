@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -75,19 +73,16 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
         dbHelper = new DatabaseHelper(getApplicationContext());
-        photoArrayList = dbHelper.getAllPhotos();
-        if (photoArrayList != null && photoArrayList.size() > 0) {
-            currentPhotoIndex = photoArrayList.size() - 1;
-            Bitmap lastBitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
-            mImageView.setImageBitmap(lastBitmap);
-        } else {
-            mImageView.setImageResource(R.drawable.ic_launcher_foreground);
-        }
+        showAllPhotos();
     }
 
     public void openSearchActivity(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
+    public void showPhotos(View view) {
+        showAllPhotos();
     }
 
     public void openCameraApp(View view) {
@@ -200,6 +195,17 @@ public class MainActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    public void showAllPhotos() {
+        photoArrayList = dbHelper.getAllPhotos();
+        if (photoArrayList != null && photoArrayList.size() > 0) {
+            currentPhotoIndex = photoArrayList.size() - 1;
+            Bitmap lastBitmap = photoArrayList.get(currentPhotoIndex).getBitmap();
+            mImageView.setImageBitmap(lastBitmap);
+        } else {
+            mImageView.setImageResource(R.drawable.ic_launcher_foreground);
+        }
     }
 
     private void getImagesByFilters(String startDate, String endDate, String caption, String latitude, String longitude) {

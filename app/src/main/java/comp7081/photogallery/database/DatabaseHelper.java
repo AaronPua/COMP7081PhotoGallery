@@ -109,7 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
         //SQLiteDatabase database = this.getReadableDatabase();
         String selectQuery =  "SELECT * FROM " + DB_TABLE_PHOTOS;
 
-        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
+        ArrayList<Photo> photoArrayList = new ArrayList<>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, null);
@@ -151,7 +151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 " WHERE " + KEY_DATE + " BETWEEN " + "?" + " AND " + "?";
         String[] selectionArgs = new String[]{startDate, endDate};
 
-        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
+        ArrayList<Photo> photoArrayList = new ArrayList<>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
@@ -192,7 +192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 " WHERE " + KEY_CAPTION + "= ?";
         String[] selectionArgs = new String[]{caption};
 
-        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
+        ArrayList<Photo> photoArrayList = new ArrayList<>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);
@@ -273,7 +273,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseStorageI
                 " WHERE " + KEY_LATITUDE + " = ?" + " AND " + KEY_LONGITUDE + " = ?";
         String[] selectionArgs = new String[] {latitude, longitude};
 
-        ArrayList<Photo> photoArrayList = new ArrayList<Photo>();
+        ArrayList<Photo> photoArrayList = new ArrayList<>();
 
         try {
             Cursor cursor = database.rawQuery(selectQuery, selectionArgs);

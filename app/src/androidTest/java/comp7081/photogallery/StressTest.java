@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.runner.AndroidJUnitRunner;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,7 @@ import com.linkedin.android.testbutler.TestButler;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,6 +58,9 @@ public class StressTest extends AndroidJUnitRunner {
     double currentLat;
     double currentLong;
 
+    @Rule
+    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
+
     @Before
     public void setup() {
         context = InstrumentationRegistry.getTargetContext();
@@ -63,7 +68,6 @@ public class StressTest extends AndroidJUnitRunner {
         dbHelper = new DatabaseHelper(context);
         db = dbHelper.getReadableDatabase();
         TestButler.setup(context);
-        //super.onStart();
         TestButler.setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING);
         TestButler.setGsmState(true);
         TestButler.setWifiState(true);
@@ -77,7 +81,7 @@ public class StressTest extends AndroidJUnitRunner {
     }
 
     private void createPhoto() throws Exception {
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_test);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_test_2);
         byte[] byteArray = BitmapUtility.convertBitmapToByteArray(bitmap);
         Random rand = new Random();
         int randInt = rand.nextInt(100000000);
@@ -140,7 +144,7 @@ public class StressTest extends AndroidJUnitRunner {
 
     @Test
     // Stress test by disabling Wifi, Network and GPS.
-    public void testSavePhoto() {
+    public void testSavePhotoWithConstraints() {
         TestButler.setGsmState(false);
         TestButler.setWifiState(false);
         TestButler.setLocationMode(Settings.Secure.LOCATION_MODE_OFF);

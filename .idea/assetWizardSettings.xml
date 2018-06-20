@@ -45,7 +45,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="imageAsset" value="$USER_HOME$/Desktop/IMG_Lighthouse.jpg" />
-                                      <entry key="outputName" value="ic_action_test" />
+                                      <entry key="outputName" value="ic_action_test_2" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -55,7 +55,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
+                            <entry key="outputIconType" value="NOTIFICATION" />
                           </map>
                         </option>
                       </PersistentState>

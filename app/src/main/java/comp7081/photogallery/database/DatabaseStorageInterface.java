@@ -1,7 +1,5 @@
 package comp7081.photogallery.database;
 
-import android.graphics.Bitmap;
-
 import java.util.ArrayList;
 
 import comp7081.photogallery.database.models.LocationInfo;
